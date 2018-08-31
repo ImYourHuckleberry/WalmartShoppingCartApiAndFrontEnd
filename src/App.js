@@ -47,6 +47,15 @@ class App extends Component {
     });
   };
 
+  handleCheckout=()=>{
+    const{dispatch}=this.props;
+
+    dispatch({
+      type: 'CHECKOUT',
+    
+    })
+  }
+
 
 
   render() {
@@ -94,6 +103,8 @@ class App extends Component {
             </span>
           </div>
         ))}
+        <div><button onClick={()=>this.handleCheckout()}>Checkout</button></div>
+        
       </div>
     );
   }
