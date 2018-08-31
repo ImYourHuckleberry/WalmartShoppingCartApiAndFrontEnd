@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import { connect } from "react-redux";
 
@@ -36,28 +35,19 @@ class App extends Component {
   };
 
   addToCart = i => {
-    const { dispatch } = this.props;
+    const { dispatch, cart } = this.props;
+    const updatedCart=[...cart]
+    const newCart= [i]
+    updatedCart.push(newCart)
 
     console.log(i);
     dispatch({
       type: "ADD_TO_CART",
-      payload: [i]
+      payload: updatedCart
     });
   };
 
-  // addNewItemToCart = itemname => {
-  //   const { items, cart, total } = this.state;
-  //   const updatedCart = [...cart];
-  //   const itemFromList = items.filter(item => item.name === itemname);
-  //   const itemPrice = itemFromList[0].price;
-  //   const newCartItem = { name: itemname, quantity: 1, price: itemPrice };
-  //   updatedCart.push(newCartItem);
-  //   const oldTotal = total;
-  //   this.setState({
-  //     cart: updatedCart,
-  //     total: (+oldTotal + +newCartItem.price).toFixed(2)
-  //   });
-  // };
+
 
   render() {
     const { items, isFetching, error } = this.props;
@@ -94,13 +84,13 @@ class App extends Component {
 
         <h4>Items in cart:</h4>
         {this.props.cart.map(item => (
-          <div key={item.itemId} className="divcont">
-            <img id="pic" src={item.thumbnailImage} />
+          <div key={item[0].itemId} className="divcont">
+            <img id="pic" src={item[0].thumbnailImage} />
             <span id="name" className="centered">
-              Product: {item.name}{" "}
+              Product: {item[0].name}{" "}
             </span>
             <span id="price" className="centered">
-              Price: {item.salePrice}
+              Price: {item[0].salePrice}
             </span>
           </div>
         ))}
