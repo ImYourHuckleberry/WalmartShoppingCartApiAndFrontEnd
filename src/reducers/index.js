@@ -2,7 +2,9 @@ const initialState = {
     items: [],
     isFetching: false,
     error: '',
-    cart:[]
+    cart:[],
+    total: 0,
+    
   };
   
   export const reducer = (state = initialState, action) => {

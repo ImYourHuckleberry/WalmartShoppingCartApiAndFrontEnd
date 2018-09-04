@@ -21,7 +21,7 @@ class App extends Component {
           type: "LOAD_ITEMS",
           payload: [
             ...json.items.map((item, i) => {
-              return { ...item, id: i, quantity: 0, checkbox: false };
+              return { ...item, id: i, quantity: 1, checkbox: false };
             })
           ]
         })
@@ -36,27 +36,70 @@ class App extends Component {
 
   addToCart = i => {
     const { dispatch, cart } = this.props;
-    const updatedCart=[...cart]
-    const newCart= [i]
-    updatedCart.push(newCart)
-
-    console.log(i);
+    const updatedCart = [...cart];
+    const newCart = [i];
+    updatedCart.push(newCart);
     dispatch({
       type: "ADD_TO_CART",
       payload: updatedCart
     });
   };
 
-  handleCheckout=()=>{
-    const{dispatch}=this.props;
+  handleCheckout = () => {
+    const { dispatch } = this.props;
 
     dispatch({
-      type: 'CHECKOUT',
-    
-    })
-  }
+      type: "CHECKOUT"
+    });
+  };
 
+  findCartItemByItemName = item => {
+    const { cart } = this.props;
+    for (let i = 0; i < cart.length; i++) {
+      if (cart[i].name === item) {
+        return cart[i];
+      }
+    }
+  };
 
+  handleOnQuantityAdded = item => {
+    const { cart, total } = this.props;
+    if (cart.length === 0) {
+      this.addToCart(item);
+      console.log("only first add");
+
+      return;
+    } else {
+      let itemIsInCart = false;
+      for (let i = 0; i < cart.length; i++) {
+        const checkItem = cart[i].map(item => item.name);
+        if (checkItem[0] === item.name) {
+          console.log("im switching item in cart boolean");
+          itemIsInCart = true;
+        }
+      }
+      if (!itemIsInCart) {
+        this.addToCart(item);
+        console.log("in adding an item not in cart to the cart");
+      } else {
+        const updatedCart = cart.map(item => {
+          if (item[0].name === item[0].name) {
+            const updatedItem = item[0];
+            updatedItem.quantity += 1;
+            return updatedItem;
+          } else {
+            return item;
+          }
+        });
+        const oldTotal = total;
+        const cartItem = this.findCartItemByItemName(item);
+        this.setState({
+          cart: updatedCart
+          //         total: (+oldTotal + +cartItem.price).toFixed(2)
+        });
+      }
+    }
+  };
 
   render() {
     const { items, isFetching, error } = this.props;
@@ -83,7 +126,7 @@ class App extends Component {
             <button
               id="addOne"
               className="centered"
-              onClick={() => this.addToCart(item)}
+              onClick={() => this.handleOnQuantityAdded(item)}
             >
               Add 1
             </button>
@@ -101,10 +144,15 @@ class App extends Component {
             <span id="price" className="centered">
               Price: {item[0].salePrice}
             </span>
+            <span id="quantity" className="centered">
+              {" "}
+              Quantity: {item[0].quantity}
+            </span>
           </div>
         ))}
-        <div><button onClick={()=>this.handleCheckout()}>Checkout</button></div>
-        
+        <div>
+          <button onClick={() => this.handleCheckout()}>Checkout</button>
+        </div>
       </div>
     );
   }
@@ -114,7 +162,8 @@ const mapStatetoProps = state => ({
   items: state.items,
   isFetching: state.isFetching,
   error: state.error,
-  cart: state.cart
+  cart: state.cart,
+  total: state.total
 });
 
 export default connect(mapStatetoProps)(App);
