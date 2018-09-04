@@ -35,9 +35,10 @@ class App extends Component {
   };
 
   addToCart = i => {
-    const { dispatch, cart } = this.props;
+    const { dispatch, cart, total } = this.props;
     const updatedCart = [...cart];
     const newCart = [i];
+    const oldTotal = total;
     updatedCart.push(newCart);
     dispatch({
       type: "ADD_TO_CART",
@@ -46,17 +47,24 @@ class App extends Component {
   };
 
   handleCheckout = () => {
-    const { dispatch } = this.props;
+    const { dispatch, cart } = this.props;
+    const total = cart.reduce((total, item) => {
+      return (total = +total + +item[0].salePrice * +item[0].quantity);
+    }, 0);
+    console.log(total);
 
     dispatch({
-      type: "CHECKOUT"
+      type: "CHECKOUT",
+      payload: total
     });
   };
 
-  findCartItemByItemName = item => {
+  findCartItemByItemName = itemname => {
     const { cart } = this.props;
     for (let i = 0; i < cart.length; i++) {
-      if (cart[i].name === item) {
+      const checkItem = cart[i].map(item => item.name);
+
+      if (checkItem[0] === itemname.name) {
         return cart[i];
       }
     }
@@ -83,26 +91,23 @@ class App extends Component {
         console.log("in adding an item not in cart to the cart");
       } else {
         const updatedCart = cart.map(item => {
-          console.log(item[0])
-          console.log(itemname)
           if (item[0] === itemname) {
             const updatedItem = item[0];
-            console.log("i am the updated item");
-            console.log(updatedItem);
+
             updatedItem.quantity += 1;
-            console.log("i am updating quantity");
+
             return updatedItem;
-            
-           
           } else {
             return item;
           }
         });
         const oldTotal = total;
         const cartItem = this.findCartItemByItemName(itemname);
+
         this.setState({
           cart: updatedCart
-          //         total: (+oldTotal + +cartItem.price).toFixed(2)
+
+          // total: (+oldTotal + +cartItem[0].salePrice).toFixed(2)
         });
       }
     }
@@ -149,7 +154,7 @@ class App extends Component {
               Product: {item[0].name}{" "}
             </span>
             <span id="price" className="centered">
-              Price: {item[0].salePrice}
+              Price: ${item[0].salePrice}
             </span>
             <span id="quantity" className="centered">
               {" "}
