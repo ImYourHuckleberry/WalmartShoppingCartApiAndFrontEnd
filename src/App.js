@@ -62,10 +62,10 @@ class App extends Component {
     }
   };
 
-  handleOnQuantityAdded = item => {
+  handleOnQuantityAdded = itemname => {
     const { cart, total } = this.props;
     if (cart.length === 0) {
-      this.addToCart(item);
+      this.addToCart(itemname);
       console.log("only first add");
 
       return;
@@ -73,26 +73,33 @@ class App extends Component {
       let itemIsInCart = false;
       for (let i = 0; i < cart.length; i++) {
         const checkItem = cart[i].map(item => item.name);
-        if (checkItem[0] === item.name) {
+        if (checkItem[0] === itemname.name) {
           console.log("im switching item in cart boolean");
           itemIsInCart = true;
         }
       }
       if (!itemIsInCart) {
-        this.addToCart(item);
+        this.addToCart(itemname);
         console.log("in adding an item not in cart to the cart");
       } else {
         const updatedCart = cart.map(item => {
-          if (item[0].name === item[0].name) {
+          console.log(item[0])
+          console.log(itemname)
+          if (item[0] === itemname) {
             const updatedItem = item[0];
+            console.log("i am the updated item");
+            console.log(updatedItem);
             updatedItem.quantity += 1;
+            console.log("i am updating quantity");
             return updatedItem;
+            
+           
           } else {
             return item;
           }
         });
         const oldTotal = total;
-        const cartItem = this.findCartItemByItemName(item);
+        const cartItem = this.findCartItemByItemName(itemname);
         this.setState({
           cart: updatedCart
           //         total: (+oldTotal + +cartItem.price).toFixed(2)
